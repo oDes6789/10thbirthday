@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#030201" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Đốm Lửa — Flame Embers</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #030201;
+      }
+
+      #canvas-container {
+        position: fixed;
+        inset: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse 90% 35% at 50% 100%, rgba(90, 25, 8, 0.5) 0%, transparent 65%),
+          radial-gradient(ellipse 60% 40% at 50% 50%, rgba(20, 8, 4, 0.15) 0%, transparent 70%);
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/main-BKhDYIYf.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/flameScene-Bh3Ajwah.js">
+    <link rel="modulepreload" crossorigin href="/assets/roomClient-UfG5v1hE.js">
+    <link rel="stylesheet" crossorigin href="/assets/flameScene-DPDxletI.css">
+    <link rel="stylesheet" crossorigin href="/assets/main-mL-2n3p2.css">
+  </head>
+  <body>
+    <div id="canvas-container"></div>
+    <div class="overlay"></div>
+
+    <div class="hud-hint" aria-hidden="true">
+      <span class="hud-hint-desktop">Nhấn <kbd>H</kbd> hoặc nút 🔥 để mở bảng điều chỉnh</span>
+      <span class="hud-hint-mobile">Chạm 🔥 để tùy chỉnh ngọn lửa</span>
+    </div>
+
+    <div id="room-ticker" aria-live="polite">
+      <div id="room-ticker-track"></div>
+    </div>
+
+    <div id="room-overlay">
+      <div class="room-card">
+        <div class="room-card-hero" aria-hidden="true">🔥</div>
+        <p class="room-card-tag">Mừng sinh nhật 10th Edutalk</p>
+        <h1>Thắp ngọn lửa của bạn</h1>
+        <p class="room-card-desc">Nhập tên để xuất hiện trên bầu trời đốm lửa cùng mọi người.</p>
+        <form id="room-name-form">
+          <div class="room-field">
+            <label for="room-name-input">Tên hiển thị</label>
+            <input id="room-name-input" type="text" maxlength="32" placeholder="Ví dụ: Minh Anh" autocomplete="nickname" required />
+          </div>
+          <button type="submit" id="room-join-btn">
+            <span class="room-join-btn-label">Thắp ngọn lửa của tôi</span>
+          </button>
+          <p id="room-join-error" hidden></p>
+        </form>
+      </div>
+    </div>
+
+    <div id="room-hud" hidden>
+      <header class="room-top-bar">
+        <button type="button" class="room-user-chip" id="room-edit-name" aria-haspopup="dialog">
+          <span class="room-user-avatar" aria-hidden="true">🔥</span>
+          <span class="room-user-info">
+            <span class="room-user-name" id="room-my-name">Bạn</span>
+            <span class="room-user-meta"><strong id="room-online-count">0</strong> người đang thắp lửa</span>
+          </span>
+        </button>
+      </header>
+
+      <div class="room-wish-panel collapsed" id="room-wish-panel">
+        <button type="button" class="room-wish-toggle" id="room-wish-toggle" aria-expanded="false" aria-controls="room-wish-body">
+          <span class="room-wish-toggle-icon" aria-hidden="true">💬</span>
+          <span class="room-wish-toggle-text" id="room-wish-preview">Chạm để viết lời chúc…</span>
+          <span class="room-wish-toggle-chevron" aria-hidden="true"></span>
+        </button>
+        <div class="room-wish-body" id="room-wish-body">
+          <form id="room-wish-form">
+            <label class="room-wish-label" for="room-wish-edit">Lời chúc của bạn</label>
+            <div class="room-wish-row">
+              <textarea
+                id="room-wish-edit"
+                maxlength="120"
+                rows="2"
+                enterkeyhint="send"
+                placeholder="Chúc Edutalk tròn 10 tuổi…"
+              ></textarea>
+              <button type="submit" id="room-wish-send" aria-label="Gửi lời chúc">
+                <span class="room-wish-send-label">Gửi</span>
+                <span class="room-wish-send-icon" aria-hidden="true">↑</span>
+              </button>
+            </div>
+            <p class="room-wish-meta">
+              <span id="room-wish-hint">Lời chúc sẽ hiện trên ngọn lửa của bạn</span>
+              <span id="room-wish-count">0/120</span>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="room-name-modal" class="room-modal" hidden role="dialog" aria-modal="true" aria-labelledby="room-name-modal-title">
+      <div class="room-modal-backdrop" data-dismiss="room-name-modal"></div>
+      <div class="room-modal-card">
+        <h2 id="room-name-modal-title">Đổi tên hiển thị</h2>
+        <form id="room-name-edit-form">
+          <input id="room-name-edit-input" type="text" maxlength="32" autocomplete="nickname" placeholder="Tên của bạn" />
+          <div class="room-modal-actions">
+            <button type="button" class="room-modal-cancel" data-dismiss="room-name-modal">Huỷ</button>
+            <button type="submit" class="room-modal-confirm">Lưu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="flame-tooltips"></div>
+
+    <aside id="flame-panel" aria-label="Bảng điều chỉnh lửa">
+      <header class="panel-header">
+        <div class="panel-title">
+          <span class="panel-icon" aria-hidden="true">🔥</span>
+          <div>
+            <h2>Điều chỉnh lửa</h2>
+            <p>Chọn preset hoặc tinh chỉnh chi tiết</p>
+          </div>
+        </div>
+        <button type="button" class="panel-close" aria-label="Đóng">×</button>
+      </header>
+
+      <div id="panel-presets" class="panel-presets"></div>
+      <div id="gui-root"></div>
+
+      <footer class="panel-footer">
+        <button type="button" id="btn-respawn" class="panel-action primary">Phân bố lại</button>
+        <button type="button" id="btn-copy" class="panel-action">Copy</button>
+        <button type="button" id="btn-reset" class="panel-action">Mặc định</button>
+      </footer>
+    </aside>
+
+    <button type="button" id="panel-fab" aria-label="Mở bảng điều chỉnh" aria-expanded="false">🔥</button>
+    <div id="toast" role="status" aria-live="polite"></div>
+
+  </body>
+</html>

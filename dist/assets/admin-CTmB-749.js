@@ -1,0 +1,1 @@
+import{c as s,a as t}from"./flameScene-Bh3Ajwah.js";const l=document.getElementById("canvas-container"),e=s(l);e.lightAllFlames();const a=t({flameMat:e.flameMat,bloomPass:e.bloomPass,params:e.params,motion:e.motion,onRespawnAll:()=>{e.respawnAll(),e.lightAllFlames()}});e.savedPreset&&a.applyPreset&&a.applyPreset(e.savedPreset);a.setOpen(!0);e.start();

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Điều chỉnh lửa</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #030201;
+      }
+
+      #canvas-container {
+        position: fixed;
+        inset: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse 90% 35% at 50% 100%, rgba(90, 25, 8, 0.5) 0%, transparent 65%),
+          radial-gradient(ellipse 60% 40% at 50% 50%, rgba(20, 8, 4, 0.15) 0%, transparent 70%);
+      }
+
+      .admin-badge {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 997;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 107, 43, 0.35);
+        background: rgba(12, 6, 4, 0.88);
+        backdrop-filter: blur(10px);
+        color: rgba(255, 235, 220, 0.92);
+        font: 12px/1.4 system-ui, sans-serif;
+        pointer-events: auto;
+      }
+
+      .admin-badge a {
+        color: #ffb347;
+        text-decoration: none;
+      }
+
+      .admin-badge a:hover {
+        text-decoration: underline;
+      }
+
+      .admin-badge span {
+        color: rgba(255, 200, 160, 0.55);
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/admin-CTmB-749.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/flameScene-Bh3Ajwah.js">
+    <link rel="stylesheet" crossorigin href="/assets/flameScene-DPDxletI.css">
+  </head>
+  <body>
+    <div id="canvas-container"></div>
+    <div class="overlay"></div>
+
+    <div class="admin-badge">
+      <strong>Admin</strong>
+      <span>·</span>
+      <span>Chỉnh giao diện lửa</span>
+      <span>·</span>
+      <a href="/preview.html">Màn chiếu →</a>
+      <span>·</span>
+      <a href="/">Trang chính</a>
+    </div>
+
+    <aside id="flame-panel" class="open" aria-label="Bảng điều chỉnh lửa">
+      <header class="panel-header">
+        <div class="panel-title">
+          <span class="panel-icon" aria-hidden="true">🔥</span>
+          <div>
+            <h2>Điều chỉnh lửa</h2>
+            <p>Cài đặt lưu tự động — áp dụng cho trang chính</p>
+          </div>
+        </div>
+        <button type="button" class="panel-close" aria-label="Đóng">×</button>
+      </header>
+
+      <div id="panel-presets" class="panel-presets"></div>
+      <div id="gui-root"></div>
+
+      <footer class="panel-footer">
+        <button type="button" id="btn-respawn" class="panel-action primary">Phân bố lại</button>
+        <button type="button" id="btn-copy" class="panel-action">Copy</button>
+        <button type="button" id="btn-reset" class="panel-action">Mặc định</button>
+      </footer>
+    </aside>
+
+    <button type="button" id="panel-fab" class="active" aria-label="Mở bảng điều chỉnh" aria-expanded="true">🔥</button>
+    <div id="toast" role="status" aria-live="polite"></div>
+
+  </body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Thuật toán ngọn lửa JS nâng cao</title>
+<style>
+  body { background: black; margin: 0; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="flame"></canvas>
+
+<script>
+// Lấy canvas và context
+const canvas = document.getElementById('flame');
+const ctx = canvas.getContext('2d');
+
+// Kích thước canvas
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Kích thước lưới nhiệt độ (giảm để tăng hiệu suất)
+const gridW = Math.floor(canvas.width / 3);
+const gridH = Math.floor(canvas.height / 3);
+
+// Mảng nhiệt độ
+let heat = new Array(gridW * gridH).fill(0);
+
+// Bảng màu mượt hơn (đen -> đỏ -> cam -> vàng -> trắng)
+const palette = [];
+for (let i = 0; i < 256; i++) {
+    const r = Math.min(255, i * 1.5);
+    const g = i < 128 ? i * 1.2 : 255;
+    const b = i < 64 ? i * 0.5 : (i < 200 ? 0 : (i - 200) * 4);
+    palette[i] = [Math.floor(r), Math.floor(g), Math.floor(b)];
+}
+
+// Tham số gió
+let windOffset = 0;
+let windSpeed = 0.05; // tốc độ thay đổi hướng gió
+
+// Hàm cập nhật nhiệt độ
+function updateFlame() {
+    // Tạo nhiệt ở hàng cuối
+    for (let x = 0; x < gridW; x++) {
+        heat[(gridH - 1) * gridW + x] = 200 + Math.floor(Math.random() * 55);
+    }
+
+    // Cập nhật hướng gió
+    windOffset += windSpeed;
+    const wind = Math.floor(Math.sin(windOffset) * 2); // dao động -2 đến 2
+
+    // Lan nhiệt lên trên
+    for (let y = 0; y < gridH - 1; y++) {
+        for (let x = 0; x < gridW; x++) {
+            const src = (y + 1) * gridW + x;
+            const decay = Math.floor(Math.random() * 3);
+            let dstX = x + wind + (Math.random() > 0.5 ? 1 : -1);
+            if (dstX < 0) dstX = gridW - 1;
+            if (dstX >= gridW) dstX = 0;
+            const dst = y * gridW + dstX;
+            heat[dst] = Math.max(heat[src] - decay, 0);
+        }
+    }
+}
+
+// Hàm vẽ ngọn lửa
+function renderFlame() {
+    const imageData = ctx.createImageData(gridW, gridH);
+    for (let i = 0; i < heat.length; i++) {
+        const color = palette[heat[i]];
+        imageData.data[i * 4] = color[0];
+        imageData.data[i * 4 + 1] = color[1];
+        imageData.data[i * 4 + 2] = color[2];
+        imageData.data[i * 4 + 3] = 255;
+    }
+    ctx.imageSmoothingEnabled = false;
+    ctx.putImageData(imageData, 0, 0);
+    ctx.drawImage(canvas, 0, 0, gridW, gridH, 0, 0, canvas.width, canvas.height);
+}
+
+// Vòng lặp animation
+function loop() {
+    updateFlame();
+    renderFlame();
+    requestAnimationFrame(loop);
+}
+
+loop();
+</script>
+</body>
+</html>
